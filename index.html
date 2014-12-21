@@ -14,6 +14,9 @@
 		var myID = 2;
 		var recieverID = 1;
 		var pusher = new Pusher('e271f8de7b3e62e99757');
+
+		var baseUrl = 'https://position-times.herokuapp.com/';
+
 		var whereAreYou = pusher.subscribe('whereAreYou');
 		whereAreYou.bind(myID, function(data) {
 			askPermission(data);
@@ -50,14 +53,14 @@
 		function whereAreYouFunction(data) {
 			$.ajax({
 			  type: "GET",
-			  url: "http://127.0.0.1:5000/whereareyou/"+myID+"/"+recieverID+"/"+data.coords.longitude+"/"+data.coords.latitude,
+			  url: baseUrl + "whereareyou/"+myID+"/"+recieverID+"/"+data.coords.longitude+"/"+data.coords.latitude,
 			});
 		}
 
 	    function iAmHereFunction(data) {
 	    	$.ajax({
 			  type: "GET",
-			  url: "http://127.0.0.1:5000/iamhere/"+recieverID+"/"+myID+"/"+data.coords.longitude+"/"+data.coords.latitude,
+			  url: baseUrl + "iamhere/"+recieverID+"/"+myID+"/"+data.coords.longitude+"/"+data.coords.latitude,
 			});
 	    }
 
