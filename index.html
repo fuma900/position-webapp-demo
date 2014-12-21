@@ -1,0 +1,71 @@
+<html>
+<head>
+	<title></title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script src="https://js.pusher.com/2.2/pusher.min.js"></script>
+</head>
+<body>
+	<label>My ID: <input type="text" id="myID"></label>
+	<label>Receiver ID: <input type="text" id="recieverID"></label>
+	<button onclick="setID()">Set IDs</button>
+	<button onclick="whereAreYouTrigger()">Where Are You?</button>
+	<script type="text/javascript">
+		var myID = 2;
+		var recieverID = 1;
+		var pusher = new Pusher('e271f8de7b3e62e99757');
+		var whereAreYou = pusher.subscribe('whereAreYou');
+		whereAreYou.bind(myID, function(data) {
+			askPermission(data);
+		});
+		var iAmHere = pusher.subscribe('iAmHere');
+		iAmHere.bind(myID, function(data) {
+			alert(data.id_reciever + 'si trova a ' + data.time.time + 'secondi da te.');
+		});
+
+		function askPermission(data) {
+			var permission = confirm(data.id_sender+' vuole sapere quanto sei lontano. Vuoi condividere la posizione?')
+			if (permission) {
+				getLocation(iAmHereFunction);
+			}
+		};
+
+		function setID() {
+			whereAreYou.unbind(myID);
+			myID = $("#myID").val();
+			recieverID = $("#recieverID").val();
+			whereAreYou.bind(myID, function(data) {
+				askPermission(data);
+			});
+			iAmHere.bind(myID, function(data) {
+				alert(data.id_reciever + 'si trova a ' + data.time.time + ' secondi da te.');
+			});
+		};
+
+		function whereAreYouTrigger () {
+			console.log('sending where are you from '+myID);
+			getLocation(whereAreYouFunction);
+		}
+
+		function whereAreYouFunction(data) {
+			$.ajax({
+			  type: "GET",
+			  url: "http://127.0.0.1:5000/whereareyou/"+myID+"/"+recieverID+"/"+data.coords.longitude+"/"+data.coords.latitude,
+			});
+		}
+
+	    function iAmHereFunction(data) {
+	    	$.ajax({
+			  type: "GET",
+			  url: "http://127.0.0.1:5000/iamhere/"+recieverID+"/"+myID+"/"+data.coords.longitude+"/"+data.coords.latitude,
+			});
+	    }
+
+	    function getLocation(callback) {
+	    if (navigator.geolocation) {
+	        navigator.geolocation.getCurrentPosition(callback);
+	    }
+	}
+	</script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+_version
+flask_cors
