@@ -1,1 +1,1 @@
-web: gunicorn runserver.py --log-file -
+web: gunicorn flask_rest_service:app
